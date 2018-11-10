@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/vulcand/oxy/testutils"
-	"github.com/vulcand/oxy/utils"
+	"github.com/qutoutiao/oxy/testutils"
+	"github.com/qutoutiao/oxy/utils"
 )
 
 func TestRateSetAdd(t *testing.T) {

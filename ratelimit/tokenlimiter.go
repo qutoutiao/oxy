@@ -10,7 +10,7 @@ import (
 	"github.com/mailgun/timetools"
 	"github.com/mailgun/ttlmap"
 	log "github.com/sirupsen/logrus"
-	"github.com/vulcand/oxy/utils"
+	"github.com/qutoutiao/oxy/utils"
 )
 
 // DefaultCapacity default capacity
