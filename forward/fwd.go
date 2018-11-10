@@ -515,7 +515,14 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, inReq *http.Request, ct
 		defer logEntry.Debug("vulcand/oxy/forward/http: completed ServeHttp on request")
 	}
 
-	start := time.Now().UTC()
+	var start time.Time
+	if f.log.GetLevel() >= log.DebugLevel {
+		start = time.Now().UTC()
+	}
+
+	if stat, ok := inReq.Context().Value(ctxKeyFwdStat).(*Stat); ok {
+		stat.TargetRequest = inReq
+	}
 
 	outReq := new(http.Request)
 	*outReq = *inReq // includes shallow copies of maps, but we handle this in Director
