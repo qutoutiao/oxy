@@ -17,7 +17,7 @@ type Stat struct {
 // RequestGetStat get stat
 func RequestGetStat(r *http.Request) *Stat {
 	s, _ := r.Context().Value(ctxKeyFwdStat).(*Stat)
-	if s.TargetRequest == nil {
+	if s != nil && s.TargetRequest == nil {
 		return nil
 	}
 	return s
