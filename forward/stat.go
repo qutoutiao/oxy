@@ -9,15 +9,21 @@ var (
 	ctxKeyFwdStat = &Stat{}
 )
 
+// Stat stat hook
 type Stat struct {
 	TargetRequest *http.Request
 }
 
-func RequestWithStat(r *http.Request) *Stat {
+// RequestGetStat get stat
+func RequestGetStat(r *http.Request) *Stat {
 	s, _ := r.Context().Value(ctxKeyFwdStat).(*Stat)
+	if s.TargetRequest == nil {
+		return nil
+	}
 	return s
 }
 
+// RequestAddStat add stat
 func RequestAddStat(r *http.Request) *http.Request {
 	return r.WithContext(context.WithValue(r.Context(), ctxKeyFwdStat, &Stat{}))
 }
