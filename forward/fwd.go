@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 	"github.com/qutoutiao/oxy/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // OxyLogger interface of the internal
@@ -520,8 +520,13 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, inReq *http.Request, ct
 		start = time.Now().UTC()
 	}
 
-	if stat, ok := inReq.Context().Value(ctxKeyFwdStat).(*Stat); ok {
-		stat.TargetRequest = inReq
+	// export hook
+	modifyResponse := f.modifyResponse
+	if export, ok := inReq.Context().Value(ctxKeyFwdExport).(*Export); ok {
+		export.targetRequest = inReq
+		if export.modifyResponse != nil {
+			modifyResponse = export.modifyResponse
+		}
 	}
 
 	outReq := new(http.Request)
@@ -533,7 +538,7 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, inReq *http.Request, ct
 		},
 		Transport:      f.roundTripper,
 		FlushInterval:  f.flushInterval,
-		ModifyResponse: f.modifyResponse,
+		ModifyResponse: modifyResponse,
 		BufferPool:     f.bufferPool,
 	}
 
