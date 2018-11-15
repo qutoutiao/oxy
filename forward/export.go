@@ -23,7 +23,11 @@ func RequestGetExport(r *http.Request) *Export {
 
 // RequestAddExport 添加请求到后端前的 request 的注入
 func RequestAddExport(r *http.Request) (*http.Request, *Export) {
-	e := &Export{}
+	e := RequestGetExport(r)
+	if e != nil {
+		return r, e
+	}
+	e = &Export{}
 	return r.WithContext(context.WithValue(r.Context(), ctxKeyFwdExport, e)), e
 }
 
