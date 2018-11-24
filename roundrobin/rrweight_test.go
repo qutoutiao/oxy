@@ -94,7 +94,7 @@ func TestRoundRobinWeightSimple(t *testing.T) {
 	proxy := httptest.NewServer(lb)
 	defer proxy.Close()
 
-	list := seq(t, proxy.URL, 500)
+	list := seq(t, proxy.URL, 5000)
 	count := make(map[string]int)
 	for _, v := range list {
 		count[v]++
@@ -122,7 +122,7 @@ func TestRoundRobinWeightRemoveServer(t *testing.T) {
 	proxy := httptest.NewServer(lb)
 	defer proxy.Close()
 
-	list := seq(t, proxy.URL, 500)
+	list := seq(t, proxy.URL, 5000)
 	count := make(map[string]int)
 	for _, v := range list {
 		count[v]++
@@ -174,7 +174,7 @@ func TestRoundRobinWeightUpsertWeight(t *testing.T) {
 	proxy := httptest.NewServer(lb)
 	defer proxy.Close()
 
-	list := seq(t, proxy.URL, 500)
+	list := seq(t, proxy.URL, 5000)
 	count := make(map[string]int)
 	for _, v := range list {
 		count[v]++
@@ -184,7 +184,7 @@ func TestRoundRobinWeightUpsertWeight(t *testing.T) {
 
 	assert.NoError(t, lb.UpsertServer(testutils.ParseURI(b.URL), Weight(3)))
 
-	list = seq(t, proxy.URL, 500)
+	list = seq(t, proxy.URL, 5000)
 	count = make(map[string]int)
 	for _, v := range list {
 		count[v]++
@@ -219,7 +219,7 @@ func TestRoundRobinWeightWeighted(t *testing.T) {
 	proxy := httptest.NewServer(lb)
 	defer proxy.Close()
 
-	list := seq(t, proxy.URL, 5000)
+	list := seq(t, proxy.URL, 35000)
 	count := make(map[string]int)
 	for _, v := range list {
 		count[v]++
