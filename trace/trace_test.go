@@ -11,10 +11,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/qutoutiao/oxy/testutils"
 	"github.com/qutoutiao/oxy/utils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTraceSimple(t *testing.T) {

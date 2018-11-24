@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/mailgun/timetools"
+	"github.com/qutoutiao/oxy/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/qutoutiao/oxy/testutils"
 )
 
 func TestDefaults(t *testing.T) {
