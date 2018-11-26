@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/qutoutiao/oxy/forward"
 	"github.com/qutoutiao/oxy/testutils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRebalancerNormalOperation(t *testing.T) {

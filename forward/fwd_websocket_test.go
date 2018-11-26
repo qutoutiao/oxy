@@ -12,9 +12,9 @@ import (
 	"time"
 
 	gorillawebsocket "github.com/gorilla/websocket"
+	"github.com/qutoutiao/oxy/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/qutoutiao/oxy/testutils"
 	"golang.org/x/net/websocket"
 )
 

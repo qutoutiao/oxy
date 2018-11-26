@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/qutoutiao/oxy/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/qutoutiao/oxy/testutils"
 )
 
 // A value returned by `MaxPeriod` corresponds to the longest bucket time period.

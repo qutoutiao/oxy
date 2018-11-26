@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/qutoutiao/oxy/memmetrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/qutoutiao/oxy/memmetrics"
 )
 
 func TestTripped(t *testing.T) {

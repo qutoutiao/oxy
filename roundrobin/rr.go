@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/qutoutiao/oxy/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // Weight is an optional functional argument that sets weight of the server
