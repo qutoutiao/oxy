@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mailgun/timetools"
@@ -14,6 +15,7 @@ type TokenBucketSet struct {
 	buckets   map[time.Duration]*tokenBucket
 	maxPeriod time.Duration
 	clock     timetools.TimeProvider
+	mutex     sync.Mutex
 }
 
 // NewTokenBucketSet creates a `TokenBucketSet` from the specified `rates`.
@@ -32,6 +34,9 @@ func NewTokenBucketSet(rates *RateSet, clock timetools.TimeProvider) *TokenBucke
 
 // Update brings the buckets in the set in accordance with the provided `rates`.
 func (tbs *TokenBucketSet) Update(rates *RateSet) {
+	tbs.mutex.Lock()
+	defer tbs.mutex.Unlock()
+
 	// Update existing buckets and delete those that have no corresponding spec.
 	for _, bucket := range tbs.buckets {
 		if rate, ok := rates.m[bucket.period]; ok {

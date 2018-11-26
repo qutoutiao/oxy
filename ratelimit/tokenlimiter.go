@@ -138,8 +138,8 @@ func (tl *TokenLimiter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (tl *TokenLimiter) consumeRates(req *http.Request, source string, amount int64) error {
-	tl.mutex.Lock()
-	defer tl.mutex.Unlock()
+	//tl.mutex.Lock()
+	//defer tl.mutex.Unlock()
 
 	effectiveRates := tl.resolveRates(req)
 	bucketSetI, exists := tl.bucketSets.Get(source)

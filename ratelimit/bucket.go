@@ -2,6 +2,7 @@ package ratelimit
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/mailgun/timetools"
@@ -40,6 +41,7 @@ type tokenBucket struct {
 	lastRefresh time.Time
 	// The number of tokens consumed the last time.
 	lastConsumed int64
+	mutex        sync.Mutex
 }
 
 // newTokenBucket crates a `tokenBucket` instance for the specified `Rate`.
@@ -61,6 +63,9 @@ func newTokenBucket(rate *rate, clock timetools.TimeProvider) *tokenBucket {
 // how much time the caller needs to wait until the desired number of tokens
 // will become available for consumption.
 func (tb *tokenBucket) consume(tokens int64) (time.Duration, error) {
+	tb.mutex.Lock()
+	defer tb.mutex.Unlock()
+
 	tb.updateAvailableTokens()
 	tb.lastConsumed = 0
 	if tokens > tb.burst {
@@ -80,6 +85,9 @@ func (tb *tokenBucket) consume(tokens int64) (time.Duration, error) {
 // It is safe to call this method multiple times, for the second and all
 // following calls have no effect.
 func (tb *tokenBucket) rollback() {
+	tb.mutex.Lock()
+	defer tb.mutex.Unlock()
+
 	tb.availableTokens += tb.lastConsumed
 	tb.lastConsumed = 0
 }
