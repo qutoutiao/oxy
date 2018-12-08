@@ -313,9 +313,12 @@ func (f *httpForwarder) modifyRequest(outReq *http.Request, target *url.URL) {
 	outReq.URL.RawQuery = u.RawQuery
 	outReq.RequestURI = "" // Outgoing request should not have RequestURI
 
-	outReq.Proto = "HTTP/1.1"
-	outReq.ProtoMajor = 1
-	outReq.ProtoMinor = 1
+	// http1.0 -> http1.1
+	if outReq.ProtoMajor == 1 && outReq.ProtoMinor == 0 {
+		outReq.Proto = "HTTP/1.1"
+		outReq.ProtoMajor = 1
+		outReq.ProtoMinor = 1
+	}
 
 	if f.rewriter != nil {
 		f.rewriter.Rewrite(outReq)
