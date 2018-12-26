@@ -239,9 +239,10 @@ func (c *CircuitBreaker) setState(new cbState, until time.Time) {
 }
 
 func (c *CircuitBreaker) timeToCheck() bool {
+	now := c.clock.UtcNow()
 	c.m.RLock()
 	defer c.m.RUnlock()
-	return c.clock.UtcNow().After(c.lastCheck)
+	return now.After(c.lastCheck)
 }
 
 // Checks if tripping condition matches and sets circuit breaker to the tripped state
@@ -250,17 +251,20 @@ func (c *CircuitBreaker) checkAndSet() {
 		return
 	}
 
+	now := c.clock.UtcNow()
 	c.m.Lock()
 	defer c.m.Unlock()
 
 	// Other goroutine could have updated the lastCheck variable before we grabbed mutex
-	if !c.clock.UtcNow().After(c.lastCheck) {
+	if !now.After(c.lastCheck) {
 		return
 	}
-	c.lastCheck = c.clock.UtcNow().Add(c.checkPeriod)
+	c.lastCheck = now.Add(c.checkPeriod)
 
 	if c.state == stateTripped {
-		c.log.Debugf("%v skip set tripped", c)
+		if c.log.Level >= log.DebugLevel {
+			c.log.Debugf("%v skip set tripped", c)
+		}
 		return
 	}
 
@@ -268,7 +272,7 @@ func (c *CircuitBreaker) checkAndSet() {
 		return
 	}
 
-	c.setState(stateTripped, c.clock.UtcNow().Add(c.fallbackDuration))
+	c.setState(stateTripped, now.Add(c.fallbackDuration))
 	c.metrics.Reset()
 }
 
