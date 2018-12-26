@@ -135,18 +135,33 @@ func (c *CircuitBreaker) activateFallback(w http.ResponseWriter, req *http.Reque
 	if c.isStandby() {
 		return false
 	}
+	now := c.clock.UtcNow()
+	c.m.RLock()
+	switch c.state {
+	case stateStandby:
+		// someone else has set it to standby just now
+		c.m.RUnlock()
+		return false
+	case stateTripped:
+		if now.Before(c.until) {
+			c.m.RUnlock()
+			return true
+		}
+	}
+	c.m.RUnlock()
+
+	// c.log.Warnf("%v is in error state", c)
 	// Circuit breaker is in tripped or recovering state
+	now = c.clock.UtcNow()
 	c.m.Lock()
 	defer c.m.Unlock()
-
-	c.log.Warnf("%v is in error state", c)
 
 	switch c.state {
 	case stateStandby:
 		// someone else has set it to standby just now
 		return false
 	case stateTripped:
-		if c.clock.UtcNow().Before(c.until) {
+		if now.Before(c.until) {
 			return true
 		}
 		// We have been in active state enough, enter recovering state
@@ -154,8 +169,8 @@ func (c *CircuitBreaker) activateFallback(w http.ResponseWriter, req *http.Reque
 		fallthrough
 	case stateRecovering:
 		// We have been in recovering state enough, enter standby and allow request
-		if c.clock.UtcNow().After(c.until) {
-			c.setState(stateStandby, c.clock.UtcNow())
+		if now.After(c.until) {
+			c.setState(stateStandby, now)
 			return false
 		}
 		// ratio controller allows this request
@@ -210,7 +225,9 @@ func (c *CircuitBreaker) exec(s SideEffect) {
 }
 
 func (c *CircuitBreaker) setState(new cbState, until time.Time) {
-	c.log.Debugf("%v setting state to %v, until %v", c, new, until)
+	if c.log.Level >= log.DebugLevel {
+		c.log.Debugf("%v setting state to %v, until %v", c, new, until)
+	}
 	c.state = new
 	c.until = until
 	switch new {
