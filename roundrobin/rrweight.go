@@ -128,7 +128,7 @@ func (r *RoundRobinWeight) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func (r *RoundRobinWeight) NextServer() (*url.URL, error) {
 	s, _ := r.serverList.Load().(*serverList)
 	if s == nil {
-		return nil, fmt.Errorf("not initialized yet")
+		return nil, fmt.Errorf("no servers in the pool")
 	}
 	u := s.nextServer()
 	if u == nil {
