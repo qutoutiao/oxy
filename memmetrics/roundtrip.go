@@ -16,7 +16,9 @@ import (
 // See RTOptions for more detail on parameters.
 type RTMetrics struct {
 	total           *RollingCounter
+	totalLock       sync.RWMutex
 	netErrors       *RollingCounter
+	netErrorsLock   sync.Mutex
 	statusCodes     map[int]*RollingCounter
 	statusCodesLock sync.RWMutex
 	histogram       *RollingHDRHistogram
@@ -121,8 +123,12 @@ func (m *RTMetrics) Export() *RTMetrics {
 	export := &RTMetrics{}
 	export.statusCodesLock = sync.RWMutex{}
 	export.histogramLock = sync.RWMutex{}
+	m.totalLock.Lock()
 	export.total = m.total.Clone()
+	m.totalLock.Unlock()
+	m.netErrorsLock.Lock()
 	export.netErrors = m.netErrors.Clone()
+	m.netErrorsLock.Unlock()
 	exportStatusCodes := map[int]*RollingCounter{}
 	for code, rollingCounter := range m.statusCodes {
 		exportStatusCodes[code] = rollingCounter.Clone()
@@ -140,16 +146,24 @@ func (m *RTMetrics) Export() *RTMetrics {
 
 // CounterWindowSize gets total windows size
 func (m *RTMetrics) CounterWindowSize() time.Duration {
+	m.totalLock.RLock()
+	defer m.totalLock.RUnlock()
 	return m.total.WindowSize()
 }
 
 // NetworkErrorRatio calculates the amont of network errors such as time outs and dropped connection
 // that occurred in the given time window compared to the total requests count.
 func (m *RTMetrics) NetworkErrorRatio() float64 {
-	if m.total.Count() == 0 {
+	m.totalLock.Lock()
+	total := m.total.Count()
+	m.totalLock.Unlock()
+	if total == 0 {
 		return 0
 	}
-	return float64(m.netErrors.Count()) / float64(m.total.Count())
+	m.netErrorsLock.Lock()
+	errCount := m.netErrors.Count()
+	m.netErrorsLock.Unlock()
+	return float64(errCount) / float64(total)
 }
 
 // ResponseCodeRatio calculates ratio of count(startA to endA) / count(startB to endB)
@@ -178,13 +192,19 @@ func (m *RTMetrics) Append(other *RTMetrics) error {
 		return errors.New("RTMetrics cannot append to self")
 	}
 
+	m.totalLock.Lock()
 	if err := m.total.Append(other.total); err != nil {
+		m.totalLock.Unlock()
 		return err
 	}
+	m.totalLock.Unlock()
 
+	m.netErrorsLock.Lock()
 	if err := m.netErrors.Append(other.netErrors); err != nil {
+		m.netErrorsLock.Unlock()
 		return err
 	}
+	m.netErrorsLock.Unlock()
 
 	copied := other.Export()
 
@@ -208,9 +228,13 @@ func (m *RTMetrics) Append(other *RTMetrics) error {
 
 // Record records a metric
 func (m *RTMetrics) Record(code int, duration time.Duration) {
+	m.totalLock.Lock()
 	m.total.Inc(1)
+	m.totalLock.Unlock()
 	if code == http.StatusGatewayTimeout || code == http.StatusBadGateway {
+		m.netErrorsLock.Lock()
 		m.netErrors.Inc(1)
+		m.netErrorsLock.Unlock()
 	}
 	m.recordStatusCode(code)
 	m.recordLatency(duration)
@@ -218,11 +242,15 @@ func (m *RTMetrics) Record(code int, duration time.Duration) {
 
 // TotalCount returns total count of processed requests collected.
 func (m *RTMetrics) TotalCount() int64 {
+	m.totalLock.Lock()
+	defer m.totalLock.Unlock()
 	return m.total.Count()
 }
 
 // NetworkErrorCount returns total count of processed requests observed
 func (m *RTMetrics) NetworkErrorCount() int64 {
+	m.netErrorsLock.Lock()
+	defer m.netErrorsLock.Unlock()
 	return m.netErrors.Count()
 }
 
@@ -253,8 +281,12 @@ func (m *RTMetrics) Reset() {
 	m.histogramLock.Lock()
 	defer m.histogramLock.Unlock()
 	m.histogram.Reset()
+	m.totalLock.Lock()
 	m.total.Reset()
+	m.totalLock.Unlock()
+	m.netErrorsLock.Lock()
 	m.netErrors.Reset()
+	m.netErrorsLock.Unlock()
 	m.statusCodes = make(map[int]*RollingCounter)
 }
 
