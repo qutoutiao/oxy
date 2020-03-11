@@ -123,7 +123,7 @@ func (m *RTMetrics) Export() *RTMetrics {
 	export := &RTMetrics{}
 	export.statusCodesLock = sync.RWMutex{}
 	export.histogramLock = sync.RWMutex{}
-	m.totalLock.Unlock()
+	m.totalLock.Lock()
 	export.total = m.total.Clone()
 	m.totalLock.Unlock()
 	m.netErrorsLock.Lock()
