@@ -38,7 +38,7 @@ func parseExpression(in string) (hpredicate, error) {
 	}
 	pr, ok := out.(hpredicate)
 	if !ok {
-		return nil, fmt.Errorf("expected predicate, got %T", out)
+		return nil, fmt.Errorf("expected predicate , got %T", out)
 	}
 	return pr, nil
 }
