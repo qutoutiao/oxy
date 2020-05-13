@@ -16,6 +16,26 @@ func TestTripped(t *testing.T) {
 		expected   bool
 	}{
 		{
+			expression: "TotalCount() > 10",
+			metrics:    statsRequestTotal(9),
+			expected:   false,
+		},
+		{
+			expression: "TotalCount() > 10",
+			metrics:    statsRequestTotal(11),
+			expected:   true,
+		},
+		{
+			expression: "ResponseCodeRatio(500, 600, 0, 600) > 0.9 && TotalCount() > 10",
+			metrics:    statsResponseCodes(statusCode{Code: 200, Count: 1}, statusCode{Code: 500, Count: 10}),
+			expected:   true,
+		},
+		{
+			expression: "ResponseCodeRatio(500, 600, 0, 600) > 0.9 && TotalCount() > 10",
+			metrics:    statsResponseCodes(statusCode{Code: 200, Count: 1}, statusCode{Code: 500, Count: 8}),
+			expected:   false,
+		},
+		{
 			expression: "NetworkErrorRatio() > 0.5",
 			metrics:    statsNetErrors(0.6),
 			expected:   true,
