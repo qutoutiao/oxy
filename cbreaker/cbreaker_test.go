@@ -304,6 +304,17 @@ func statsNetErrors(threshold float64) *memmetrics.RTMetrics {
 	return m
 }
 
+func statsRequestTotal(count int) *memmetrics.RTMetrics {
+	m, err := memmetrics.NewRTMetrics()
+	if err != nil {
+		panic(err)
+	}
+	for i := 0; i < count; i++ {
+		m.Record(http.StatusOK, 0)
+	}
+	return m
+}
+
 func statsLatencyAtQuantile(_ float64, value time.Duration) *memmetrics.RTMetrics {
 	m, err := memmetrics.NewRTMetrics()
 	if err != nil {
