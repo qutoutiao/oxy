@@ -1,4 +1,4 @@
-module qutoutiao/oxy
+module github.com/qutoutiao/oxy
 
 go 1.21.3
 
