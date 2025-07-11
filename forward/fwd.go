@@ -53,6 +53,14 @@ func PassHostHeader(b bool) optSetter {
 	}
 }
 
+// PassHostHeader specifies if a client's Host header field should be delegated
+func FullDuplexFlag(b bool) optSetter {
+	return func(f *Forwarder) error {
+		f.httpForwarder.fullDuplexFlag = b
+		return nil
+	}
+}
+
 // RoundTripper sets a new http.RoundTripper
 // Forwarder will use http.DefaultTransport as a default round tripper
 func RoundTripper(r http.RoundTripper) optSetter {
@@ -196,6 +204,7 @@ type httpForwarder struct {
 	modifyResponse func(*http.Response) error
 
 	tlsClientConfig *tls.Config
+	fullDuplexFlag  bool // if true, enables full duplex mode for the response controller
 
 	log OxyLogger
 
@@ -543,6 +552,12 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, inReq *http.Request, ct
 		FlushInterval:  f.flushInterval,
 		ModifyResponse: modifyResponse,
 		BufferPool:     f.bufferPool,
+	}
+
+	// switch on full duplex mode
+	if f.fullDuplexFlag {
+		rc := http.NewResponseController(w)
+		_ = rc.EnableFullDuplex()
 	}
 
 	if f.log.GetLevel() >= log.DebugLevel {
