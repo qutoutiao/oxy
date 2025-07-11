@@ -8,7 +8,6 @@ require (
 	github.com/mailgun/multibuf v0.0.0-20150714184110-565402cd71fb
 	github.com/mailgun/timetools v0.0.0-20170619190023-f3a7b8ffff47
 	github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f
-	github.com/qutoutiao/oxy v0.0.0-20200514074722-b64a7ed04815
 	github.com/sirupsen/logrus v1.0.3
 	github.com/stretchr/testify v1.2.2
 	github.com/vulcand/predicate v1.0.0

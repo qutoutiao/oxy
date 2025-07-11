@@ -23,8 +23,6 @@ github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f h1:ZZYhg16XocqSKPGN
 github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f/go.mod h1:8heskWJ5c0v5J9WH89ADhyal1DOZcayll8fSbhB+/9A=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/qutoutiao/oxy v0.0.0-20200514074722-b64a7ed04815 h1:WrM9N2FNfnfWuqWhth+//C1WEn2d7dZ+BkSkXpA5swo=
-github.com/qutoutiao/oxy v0.0.0-20200514074722-b64a7ed04815/go.mod h1:qOqoywNR4tho4jiN3dQmWxDliayyX0W1Oy4RKeN7B50=
 github.com/sirupsen/logrus v1.0.3 h1:B5C/igNWoiULof20pKfY4VntcIPqKuwEmoLZrabbUrc=
 github.com/sirupsen/logrus v1.0.3/go.mod h1:pMByvHTf9Beacp5x1UXfOR9xyW/9antXMhjMPG0dEzc=
 github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=
